@@ -2,11 +2,12 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
+import type { Session } from "next-auth"; // ✅ import proper type
 import React from "react";
 
 interface Props {
   children: React.ReactNode;
-  session?: any; // Optional if you want to hydrate server-side sessions
+  session?: Session; // properly typed
 }
 
 export default function SessionProviderWrapper({ children, session }: Props) {

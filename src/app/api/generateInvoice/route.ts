@@ -3,6 +3,14 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions"; // ✅ named import
 import { guestRateLimiter } from "@/lib/rateLimiter";
 
+// Define the shape of your user session
+interface UserSession {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  hasPaid?: boolean;
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
@@ -25,10 +33,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invoice generated (guest)" });
   }
 
-  // Logged-in user: check Bitcoin payment (simplified)
-  const userHasPaid = (session.user as any)?.hasPaid ?? false;
+  // Logged-in user: safely typecast
+  const user = session.user as UserSession;
 
-  if (!userHasPaid) {
+  if (!user.hasPaid) {
     return NextResponse.json(
       {
         message: "You need to pay via Bitcoin to generate invoices.",
